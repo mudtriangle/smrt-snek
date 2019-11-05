@@ -4,4 +4,4 @@ build-docker:
 	docker run --cpus 4 --cpu-shares 1024 --name decoding_nature_gnn -d -v $(PWD):/app:rw decoding_nature_gnn:1.0
 
 run:
-	docker exec -it decoding_nature_gnn bash -c "cd src && python test.py"
+	docker exec -it decoding_nature_gnn bash -c "cd src && python game.py"
