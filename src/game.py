@@ -3,7 +3,7 @@ import numpy as np
 
 # Constants for training.
 NUM_SNEKS = 100
-NUM_PARENTS = 1
+NUM_PARENTS = 2
 NUM_GENS = 1000
 MAX_MOVES = 1000000
 
@@ -58,7 +58,7 @@ for generation in range(NUM_GENS):
     highest_points = sorted(range(len(points)), key=lambda x: points[x])[-NUM_PARENTS:]
 
     # Add info of the best snek to bests and add the generational average.
-    bests.append(highest_points[-1])
+    bests.append(points[highest_points[-1]])
     avgs.append(np.mean(points))
 
     # Summary of the generation.
@@ -72,18 +72,18 @@ for generation in range(NUM_GENS):
         print('        Snek %i: %i points.' % (ind, points[ind]))
         parents.append(sneks[ind])
 
-    # Save the parent sneks to play in next generation.
+    # Populate the generation with offsprings.
     sneks = []
     food = []
-    for ind in range(len(parents)):
-        parents[ind].reset()
-        sneks.append(parents[ind])
-        food.append((int(np.random.uniform(low=0, high=99)), int(np.random.uniform(low=0, high=99))))
-
-    # Populate the rest of the generation with offsprings.
     for i in range(NUM_SNEKS - NUM_PARENTS):
         sneks.append(Snek())
         sneks[i].update(parents)
+        food.append((int(np.random.uniform(low=0, high=99)), int(np.random.uniform(low=0, high=99))))
+
+    # Save the parent sneks to play in next generation.
+    for ind in range(len(parents)):
+        parents[ind].reset()
+        sneks.append(parents[ind])
         food.append((int(np.random.uniform(low=0, high=99)), int(np.random.uniform(low=0, high=99))))
 
 # Summary of the entire training.

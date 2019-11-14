@@ -80,7 +80,7 @@ class Snek:
     def eat(self):
         # If snek eats, set just_ate to true and earn 500 points.
         self.just_ate = True
-        self.points += 500
+        self.points += 5
 
     def predict(self, food):
         # Build the target array. snek's head x and y, food's x and y, and whether there is a part of the snek's body
@@ -103,11 +103,18 @@ class Snek:
     def update(self, other_sneks):
         # Update weights and biases in brain with other sneks' brains.
         other_brains = []
+        points = []
         for snek in other_sneks:
             other_brains.append(snek.brain)
+            points.append(snek.points)
+
+        total = sum(points)
+        relevances = []
+        for point in points:
+            relevances.append(1 - (point / total))
 
         # Call brain's update weights function.
-        self.brain.update_weights(other_brains)
+        self.brain.update_weights(other_brains, relevances)
 
     def reset(self):
         # Function to reset everything but the weights and biases of a snake after playing. Useful for parent sneks that
@@ -138,4 +145,3 @@ class Snek:
             else:
                 self.pieces.append((self.pieces[0][0] + 1, self.pieces[0][1]))
                 self.pieces.append((self.pieces[0][0] + 2, self.pieces[0][1]))
-
