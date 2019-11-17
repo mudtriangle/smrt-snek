@@ -6,27 +6,33 @@ from neat_snek import Snek
 
 def eval_sneks(genomes=None, config=None):
     food = []
-    for _ in range(10000):
-        food.append((np.random.randint(low=0, high=99), np.random.randint(low=0, high=99)))
+    game = []
+    for _ in range(100):
+        for _ in range(10000):
+            game.append((np.random.randint(low=0, high=99), np.random.randint(low=0, high=99)))
+        food.append(game)
 
     for _, genome in genomes:
         current_food_index = 0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         snek = Snek(net)
 
-        while current_food_index < 10000:
-            if not snek.alive:
-                break
+        scores = []
+        for game in food:
+            while current_food_index < 10000:
+                if not snek.alive:
+                    break
 
-            # print(snek.predict(food[current_food_index]))
-            direction = np.argmax(snek.predict(food[current_food_index]))
-            snek.move(direction)
-            snek.check_collision()
-            if snek.pieces[0] == food[current_food_index]:
-                snek.eat()
-                current_food_index += 1
+                direction = np.argmax(snek.predict(game[current_food_index]))
+                snek.move(direction)
+                snek.check_collision()
+                if snek.pieces[0] == game[current_food_index]:
+                    snek.eat()
+                    current_food_index += 1
 
-        genome.fitness = snek.points
+            scores.append(snek.points)
+
+        genome.fitness = np.mean(scores)
 
 
 def run(config_file):
