@@ -5,8 +5,8 @@ let game_started;
 function setup() {
     createCanvas(1430, 700);
 
-    ai_board = new Board('../src_model/play.py');
-    user_board = new Board('human');
+    ai_board = new Board();
+    user_board = new Board();
 
     game_started = false;
 }
@@ -24,7 +24,7 @@ function draw() {
         ai_board.draw(0, 0, 5);
         user_board.draw(720, 0, 5);
         // ai_board.update();
-        // user_board.update();
+        user_board.update();
     }
 }
 
@@ -37,8 +37,8 @@ function keyPressed() {
     } else {
         if (key === 'r') {
             game_started = false;
-            // ai_board = new Board('../src_model/play.py');
-            // user_board = new Board('human');
+            // ai_board = new Board();
+            // user_board = new Board();
         }
     }
 }
