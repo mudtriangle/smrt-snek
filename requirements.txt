@@ -3,3 +3,4 @@ numpy==1.17.3
 tensorflow==2.0.0
 Keras==2.3.1
 neat-python==0.92
+arcade==2.1.7
