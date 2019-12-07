@@ -1,16 +1,14 @@
 class Board {
     constructor() {
         this.board = [];
-
         this.snek = [[0, 2], [0, 1], [0, 0]];
-
         this.food = [ceil(random(100)) - 1, ceil(random(100)) - 1];
 
-        // 0: DOWN, 1: UP, 2: RIGHT, 3: LEFT.
+        // 0: RIGHT, 1: LEFT, 2: DOWN, 3: UP.
         this.direction = 0;
-
         this.just_ate = false;
-
+        this.score = 0;
+        this.alive = true;
         this.populate_board();
     }
 
@@ -40,26 +38,54 @@ class Board {
     }
 
     update() {
+        if (!this.alive) {
+            return;
+        }
+
         let last_piece = this.snek.pop();
 
         if (this.direction === 0) {
-            this.snek = [[this.snek[0][0], this.snek[0][1] + 1]].concat(this.snek)
+            this.snek = [[this.snek[0][0], this.snek[0][1] + 1]].concat(this.snek);
+
+            if (this.snek[0][1] > 99) {
+                this.snek[0][1] = 99;
+                this.alive = false;
+            }
 
         } else if (this.direction === 1) {
-            this.snek = [[this.snek[0][0], this.snek[0][1] - 1]].concat(this.snek)
+            this.snek = [[this.snek[0][0], this.snek[0][1] - 1]].concat(this.snek);
+
+            if (this.snek[0][1] < 0) {
+                this.snek[0][1] = 0;
+                this.alive = false;
+            }
 
         } else if (this.direction === 2) {
-            this.snek = [[this.snek[0][0] + 1, this.snek[0][1]]].concat(this.snek)
+            this.snek = [[this.snek[0][0] + 1, this.snek[0][1]]].concat(this.snek);
+
+            if (this.snek[0][0] > 99) {
+                this.snek[0][0] = 99;
+                this.alive = false;
+            }
 
         } else if (this.direction === 3) {
-            this.snek = [[this.snek[0][0] - 1, this.snek[0][1]]].concat(this.snek)
+            this.snek = [[this.snek[0][0] - 1, this.snek[0][1]]].concat(this.snek);
+
+            if (this.snek[0][0] < 0) {
+                this.snek[0][0] = 0;
+                this.alive = false;
+            }
         }
-        console.log(this.snek);
+
+        if (this.food[0] === this.snek[0][0] && this.food[1] === this.snek[0][1]) {
+            this.just_ate = true;
+        }
 
         if (this.just_ate) {
             this.just_ate = false;
             this.snek = this.snek.concat([last_piece]);
             this.food = [ceil(random(100)) - 1, ceil(random(100)) - 1];
+            this.score++;
         }
 
         this.populate_board();
@@ -73,10 +99,10 @@ class Board {
             }
         }
 
+        this.board[this.food[1]][this.food[0]] = 2;
+
         for (let i = 0; i < this.snek.length; i++) {
             this.board[this.snek[i][1]][this.snek[i][0]] = 1;
         }
-
-        this.board[this.food[1]][this.food[0]] = 2;
     }
 }

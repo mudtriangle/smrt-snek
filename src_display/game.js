@@ -23,7 +23,7 @@ function draw() {
     } else {
         ai_board.draw(0, 0, 5);
         user_board.draw(720, 0, 5);
-        // ai_board.update();
+        ai_board.update();
         user_board.update();
     }
 }
@@ -37,8 +37,29 @@ function keyPressed() {
     } else {
         if (key === 'r') {
             game_started = false;
-            // ai_board = new Board();
-            // user_board = new Board();
+            ai_board = new Board();
+            user_board = new Board();
+        }
+
+        if (keyCode === RIGHT_ARROW) {
+            if (user_board.direction !== 1) {
+                user_board.direction = 0;
+            }
+        }
+        if (keyCode === LEFT_ARROW) {
+            if (user_board.direction !== 0) {
+                user_board.direction = 1;
+            }
+        }
+        if (keyCode === DOWN_ARROW) {
+            if (user_board.direction !== 3) {
+                user_board.direction = 2;
+            }
+        }
+        if (keyCode === UP_ARROW) {
+            if (user_board.direction !== 2) {
+                user_board.direction = 3;
+            }
         }
     }
 }
