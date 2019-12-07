@@ -19,7 +19,7 @@ def eval_sneks(genomes=None, config=None):
 
         scores = []
         for game in food:
-            while current_food_index < 10000:
+            while current_food_index < 100000:
                 if not snek.alive:
                     break
 

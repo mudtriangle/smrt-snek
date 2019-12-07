@@ -44,12 +44,13 @@ def get_shape(board, x_offset, y_offset, square_size, square_spacing):
 
 def update_game(board, snek, alive, direction, food):
     if not alive:
-        return board, snek, alive, food
+        return board, snek, False, food
 
     new_board = np.zeros(board.shape, dtype=int)
     new_snek = []
     new_alive = True
     new_food = food
+
     if direction == 0:
         new_snek = [(snek[0][0], snek[0][1] + 1)] + snek[: -1]
         if new_snek[0][1] > 99:
@@ -81,20 +82,20 @@ def update_game(board, snek, alive, direction, food):
         new_snek.append(snek[-1])
         new_food = (int(np.random.uniform(0, 99)), int(np.random.uniform(0, 99)))
 
-    for x in range(board.shape[0]):
-        for y in range(board.shape[1]):
+    for x in range(new_board.shape[0]):
+        for y in range(new_board.shape[1]):
             if (x, y) in new_snek:
-                board[x][y] = 2
+                new_board[x][y] = 1
 
             elif (x, y) == new_food:
-                board[x][y] = 1
+                new_board[x][y] = 2
 
     return new_board, new_snek, new_alive, new_food
 
 
 class Game(arcade.Window):
     def __init__(self, width, height, title):
-        super().__init__(width, height, title, update_rate=1/10)
+        super().__init__(width, height, title, update_rate=1/20)
 
         arcade.set_background_color((255, 255, 255))
 
@@ -117,16 +118,6 @@ class Game(arcade.Window):
         self.alive_player = True
 
     def setup(self):
-        self.board_ai, self.pieces_ai, self.alive_ai, self.food_ai = update_game(self.board_ai, self.pieces_ai,
-                                                                                 self.alive_ai, self.direction_ai,
-                                                                                 self.food_ai)
-
-        self.board_player, self.pieces_player, self.alive_player, self.food_player = update_game(self.board_player,
-                                                                                                 self.pieces_player,
-                                                                                                 self.alive_player,
-                                                                                                 self.direction_player,
-                                                                                                 self.food_player)
-
         self.shape_list = arcade.ShapeElementList()
 
         self.shape_list.append(get_shape(self.board_ai, 5, 5, 5, 7))
@@ -134,6 +125,7 @@ class Game(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, (255, 255, 255))
         self.shape_list.draw()
 
     def on_key_press(self, key, modifiers):
@@ -150,10 +142,23 @@ class Game(arcade.Window):
             self.direction_player = 0
 
     def update(self, delta_time):
-        direction = np.argmax(snek.predict(self.food_ai))
-        snek.move(direction)
-        self.direction_ai = direction
-        print(direction)
+        if self.alive_ai:
+            direction = np.argmax(snek.predict(self.food_ai))
+            snek.pieces = self.pieces_ai
+
+            if direction == 3 and self.direction_ai != 2:
+                self.direction_ai = 3
+
+            elif direction == 2 and self.direction_ai != 3:
+                self.direction_ai = 2
+
+            elif direction == 1 and self.direction_ai != 0:
+                self.direction_ai = 1
+
+            elif direction == 0 and self.direction_ai != 1:
+                self.direction_ai = 0
+
+        # print(self.direction_ai, self.pieces_ai, self.food_ai, self.alive_ai)
 
         self.board_ai, self.pieces_ai, self.alive_ai, self.food_ai = update_game(self.board_ai, self.pieces_ai,
                                                                                  self.alive_ai, self.direction_ai,
@@ -174,7 +179,6 @@ class Game(arcade.Window):
 def main():
     window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.setup()
-    window.on_draw()
     arcade.run()
 
 
