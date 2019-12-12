@@ -19,12 +19,12 @@ def eval_sneks(genomes=None, config=None):
 
         scores = []
         for game in food:
-            while current_food_index < 100000:
+            while current_food_index < 10000:
                 if not snek.alive:
                     break
 
                 direction = np.argmax(snek.predict(game[current_food_index]))
-                snek.move(direction)
+                snek.move(direction, game[current_food_index])
                 snek.check_collision()
                 if snek.pieces[0] == game[current_food_index]:
                     snek.eat()
@@ -50,10 +50,10 @@ def run(config_file):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(5))
 
-    # Run for up to 300 generations.
-    winner = p.run(eval_sneks, 300)
+    # Run for up to 1000 generations.
+    winner = p.run(eval_sneks, 1000)
 
-    with open('winner.pkl', 'wb') as output:
+    with open('winner_2.pkl', 'wb') as output:
         pickle.dump(winner, output, 1)
 
 

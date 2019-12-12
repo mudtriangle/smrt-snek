@@ -10,7 +10,7 @@ SCREEN_TITLE = "Smart Snek"
 
 COLORS = [(240, 234, 214), (12, 10, 4), (255, 0, 0)]
 
-with open('winner.pkl', 'rb') as f:
+with open('winner_2.pkl', 'rb') as f:
     genome = pickle.load(f)
 
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -44,7 +44,7 @@ def get_shape(board, x_offset, y_offset, square_size, square_spacing):
 
 def update_game(board, snek, alive, direction, food):
     if not alive:
-        return board, snek, False, food
+        return board, snek, alive, food
 
     new_board = np.zeros(board.shape, dtype=int)
     new_snek = []
@@ -65,14 +65,14 @@ def update_game(board, snek, alive, direction, food):
 
     elif direction == 2:
         new_snek = [(snek[0][0] + 1, snek[0][1])] + snek[: -1]
-        if new_snek[0][1] > 99:
+        if new_snek[0][0] > 99:
             new_snek[0] = (99, new_snek[0][1])
             new_alive = False
 
     elif direction == 3:
         new_snek = [(snek[0][0] - 1, snek[0][1])] + snek[: -1]
-        if new_snek[0][1] < 0:
-            new_snek[0][1] = (0, new_snek[0][1])
+        if new_snek[0][0] < 0:
+            new_snek[0] = (0, new_snek[0][1])
             new_alive = False
 
     if new_snek[0] in new_snek[1:]:
@@ -80,7 +80,10 @@ def update_game(board, snek, alive, direction, food):
 
     if food == new_snek[0]:
         new_snek.append(snek[-1])
-        new_food = (int(np.random.uniform(0, 99)), int(np.random.uniform(0, 99)))
+        while True:
+            new_food = (int(np.random.uniform(0, 99)), int(np.random.uniform(0, 99)))
+            if new_food[0] != food[0] and new_food[1] != food[1]:
+                break
 
     for x in range(new_board.shape[0]):
         for y in range(new_board.shape[1]):
@@ -99,7 +102,6 @@ class Game(arcade.Window):
 
         arcade.set_background_color((255, 255, 255))
 
-        self.draw_time = 0
         self.shape_list = None
 
         self.board_ai = np.zeros((100, 100), dtype=int)
@@ -117,16 +119,39 @@ class Game(arcade.Window):
         self.alive_ai = True
         self.alive_player = True
 
+        self.score_ai = 0
+        self.score_player = 0
+
     def setup(self):
+        self.alive_ai = True
+        self.alive_player = True
+
+        self.direction_ai = 0
+        self.direction_player = 0
+
+        self.pieces_ai = [(0, 2), (0, 1), (0, 0)]
+        self.pieces_player = [(0, 2), (0, 1), (0, 0)]
+
+        self.pieces_ai = [(0, 2), (0, 1), (0, 0)]
+        self.pieces_player = [(0, 2), (0, 1), (0, 0)]
+
+        self.food_ai = (int(np.random.uniform(0, 99)), int(np.random.uniform(0, 99)))
+        self.food_player = (int(np.random.uniform(0, 99)), int(np.random.uniform(0, 99)))
+
         self.shape_list = arcade.ShapeElementList()
 
         self.shape_list.append(get_shape(self.board_ai, 5, 5, 5, 7))
         self.shape_list.append(get_shape(self.board_player, 725, 5, 5, 7))
 
+        self.score_ai = len(self.pieces_ai) - 3
+        self.score_player = len(self.pieces_player) - 3
+
     def on_draw(self):
         arcade.start_render()
         arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, (255, 255, 255))
         self.shape_list.draw()
+        arcade.draw_text('Points: %i' % self.score_ai, 5, 5, (0, 0, 0), 12)
+        arcade.draw_text('Points: %i' % self.score_player, 1425, 5, (0, 0, 0), 12, anchor_x='right')
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP and self.direction_player != 2:
@@ -141,10 +166,14 @@ class Game(arcade.Window):
         elif key == arcade.key.RIGHT and self.direction_player != 1:
             self.direction_player = 0
 
+        elif key == arcade.key.R:
+            self.setup()
+
     def update(self, delta_time):
         if self.alive_ai:
-            direction = np.argmax(snek.predict(self.food_ai))
             snek.pieces = self.pieces_ai
+            pred = snek.predict(self.food_ai, self.direction_ai)
+            direction = np.argmax(pred)
 
             if direction == 3 and self.direction_ai != 2:
                 self.direction_ai = 3
@@ -157,8 +186,6 @@ class Game(arcade.Window):
 
             elif direction == 0 and self.direction_ai != 1:
                 self.direction_ai = 0
-
-        # print(self.direction_ai, self.pieces_ai, self.food_ai, self.alive_ai)
 
         self.board_ai, self.pieces_ai, self.alive_ai, self.food_ai = update_game(self.board_ai, self.pieces_ai,
                                                                                  self.alive_ai, self.direction_ai,
@@ -174,6 +201,9 @@ class Game(arcade.Window):
 
         self.shape_list.append(get_shape(self.board_ai, 5, 5, 5, 7))
         self.shape_list.append(get_shape(self.board_player, 725, 5, 5, 7))
+
+        self.score_ai = len(self.pieces_ai) - 3
+        self.score_player = len(self.pieces_player) - 3
 
 
 def main():
