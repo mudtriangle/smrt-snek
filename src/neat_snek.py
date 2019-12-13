@@ -1,3 +1,4 @@
+# External Libraries
 import numpy as np
 
 
@@ -85,10 +86,12 @@ class Snek:
 
     def predict(self, food, prev_dir=None):
         #  0,  1,  2,  3 are whether the food is in a direction UP, DOWN, LEFT, RIGHT.
-        #  4,  5,  6,  7 are the distance from the head to the food, 0 if it is not in that direction.
+        #  4,  5,  6,  7 are the distance from the head to the food, negative if it is not in that direction.
         #  8,  9, 10, 11 are the distances from the head to the walls.
         # 12, 13, 14, 15 are whether there are parts of the snek in each of the four directions.
-        # 16, 17, 18, 19 are the distance from the head to the parts of the snek, 0 if none in that direction.
+        # 16, 17, 18, 19 are the distance from the head to the parts of the snek, negative if none in that direction.
+        # 20, 21, 22, 23 are whether the last direction the Snek moved towards is UP, DOWN, LEFT, RIGHT.
+
         target = np.zeros(24)
         head = self.pieces[0]
 
@@ -144,8 +147,6 @@ class Snek:
         if prev_dir is None:
             prev_dir = self.last_direction
         target[20 + prev_dir] = 1
-
-        # print(target)
 
         # Call brain's predict.
         return self.brain.activate(target)
