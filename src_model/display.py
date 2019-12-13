@@ -10,7 +10,7 @@ SCREEN_TITLE = "Smart Snek"
 
 COLORS = [(240, 234, 214), (12, 10, 4), (255, 0, 0)]
 
-with open('winner_2.pkl', 'rb') as f:
+with open('winner.pkl', 'rb') as f:
     genome = pickle.load(f)
 
 config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,

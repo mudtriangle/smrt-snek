@@ -53,7 +53,7 @@ def run(config_file):
     # Run for up to 1000 generations.
     winner = p.run(eval_sneks, 1000)
 
-    with open('winner_2.pkl', 'wb') as output:
+    with open('winner.pkl', 'wb') as output:
         pickle.dump(winner, output, 1)
 
 
