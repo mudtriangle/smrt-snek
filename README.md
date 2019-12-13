@@ -43,11 +43,11 @@ which is afterwards called by the game.
 
 ## How to Run
 To build the Docker container from the Dockerfile, use
-`make run`.\
+`make docker-build`.\
 To run the training of the model and then store the
-winner, use `make train`.\
+winner, use `make docker-train` or `make train`.\
 To run the display of the game after having trained a
-Snek, use `make display`.
+Snek, use `make docker-display` or `make display`.
 
 ## Sample Picture
 ![fig_01](figs/fig_01.png)
