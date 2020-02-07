@@ -29,7 +29,7 @@ webcomic), are the following:
   * `src/neat_train.py`, which handles the training
   using the NEAT library, a library specialized in
   training neural networks using a genetic algorithm.
-  * `src\neat.config`, a file containing all the
+  * `src/neat.config`, a file containing all the
   configuration specifics for this particular problem.
 
 The files involved in the visual presentation and in
