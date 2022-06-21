@@ -1,4 +1,4 @@
 pip==19.3.1
-numpy==1.17.3
+numpy==1.22.0
 neat-python==0.92
 arcade==2.1.7
